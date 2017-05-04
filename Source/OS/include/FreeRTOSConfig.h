@@ -177,9 +177,9 @@ files. */
 #ifndef __IAR_SYSTEMS_ASM__
 
 	/* Library includes. */
-#include "stm32f7xx.h"
+	#include "stm32f7xx_hal.h"
 
-extern uint32_t SystemCoreClock;
+	extern uint32_t SystemCoreClock;
 
 #endif /* __IAR_SYSTEMS_ASM__ */
 

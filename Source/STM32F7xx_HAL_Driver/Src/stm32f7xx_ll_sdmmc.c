@@ -175,6 +175,7 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f7xx_hal.h"
 
 /** @addtogroup STM32F7xx_HAL_Driver
   * @{
@@ -326,6 +327,10 @@ HAL_StatusTypeDef SDMMC_PowerState_ON(SDMMC_TypeDef *SDMMCx)
 {  
   /* Set power state to ON */ 
   SDMMCx->POWER = SDMMC_POWER_PWRCTRL;
+  
+  /* 1ms: required power up waiting time before starting the SD initialization 
+  sequence */
+  HAL_Delay(1);
   
   return HAL_OK; 
 }

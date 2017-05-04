@@ -409,6 +409,10 @@ ErrorStatus LL_PLL_ConfigSystemClock_HSE(uint32_t HSEFrequency, uint32_t HSEBypa
   ErrorStatus status = SUCCESS;
   uint32_t pllfreq = 0U;
 
+  /* Check the parameters */
+  assert_param(IS_LL_UTILS_HSE_FREQUENCY(HSEFrequency));
+  assert_param(IS_LL_UTILS_HSE_BYPASS(HSEBypass));
+
   /* Check if one of the PLL is enabled */
   if(UTILS_PLL_IsBusy() == SUCCESS)
   {
@@ -612,17 +616,24 @@ static ErrorStatus UTILS_SetFlashLatency(uint32_t HCLK_Frequency)
 static uint32_t UTILS_GetPLLOutputFrequency(uint32_t PLL_InputFrequency, LL_UTILS_PLLInitTypeDef *UTILS_PLLInitStruct)
 {
   uint32_t pllfreq = 0U;
+
+  /* Check the parameters */
+  assert_param(IS_LL_UTILS_PLLM_VALUE(UTILS_PLLInitStruct->PLLM));
+  assert_param(IS_LL_UTILS_PLLN_VALUE(UTILS_PLLInitStruct->PLLN));
+  assert_param(IS_LL_UTILS_PLLP_VALUE(UTILS_PLLInitStruct->PLLP));
   
   /* Check different PLL parameters according to RM                          */
   /*  - PLLM: ensure that the VCO input frequency ranges from 0.95 to 2.1 MHz.   */
   pllfreq = PLL_InputFrequency / (UTILS_PLLInitStruct->PLLM & (RCC_PLLCFGR_PLLM >> RCC_PLLCFGR_PLLM_Pos));
+  assert_param(IS_LL_UTILS_PLLVCO_INPUT(pllfreq));
 
   /*  - PLLN: ensure that the VCO output frequency is between 100 and 432 MHz.*/
   pllfreq = pllfreq * (UTILS_PLLInitStruct->PLLN & (RCC_PLLCFGR_PLLN >> RCC_PLLCFGR_PLLN_Pos));
+  assert_param(IS_LL_UTILS_PLLVCO_OUTPUT(pllfreq));
   
   /*  - PLLP: ensure that max frequency at 216000000 Hz is reached     */
   pllfreq = pllfreq / (((UTILS_PLLInitStruct->PLLP >> RCC_PLLCFGR_PLLP_Pos) + 1) * 2);
-
+  assert_param(IS_LL_UTILS_PLL_FREQUENCY(pllfreq));
 
   return pllfreq;
 }
@@ -672,6 +683,10 @@ static ErrorStatus UTILS_EnablePLLAndSwitchSystem(uint32_t SYSCLK_Frequency, LL_
 {
   ErrorStatus status = SUCCESS;
   uint32_t hclk_frequency = 0U;
+
+  assert_param(IS_LL_UTILS_SYSCLK_DIV(UTILS_ClkInitStruct->AHBCLKDivider));
+  assert_param(IS_LL_UTILS_APB1_DIV(UTILS_ClkInitStruct->APB1CLKDivider));
+  assert_param(IS_LL_UTILS_APB2_DIV(UTILS_ClkInitStruct->APB2CLKDivider));
 
   /* Calculate HCLK frequency */
   hclk_frequency = __LL_RCC_CALC_HCLK_FREQ(SYSCLK_Frequency, UTILS_ClkInitStruct->AHBCLKDivider);

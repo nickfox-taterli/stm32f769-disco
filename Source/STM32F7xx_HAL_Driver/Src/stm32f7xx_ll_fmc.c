@@ -74,6 +74,7 @@
   */ 
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f7xx_hal.h"
 
 /** @addtogroup STM32F7xx_HAL_Driver
   * @{
@@ -674,12 +675,28 @@ HAL_StatusTypeDef FMC_NAND_ECC_Disable(FMC_NAND_TypeDef *Device, uint32_t Bank)
   */
 HAL_StatusTypeDef FMC_NAND_GetECC(FMC_NAND_TypeDef *Device, uint32_t *ECCval, uint32_t Bank, uint32_t Timeout)
 {
+  uint32_t tickstart = 0;
+
   /* Check the parameters */ 
   assert_param(IS_FMC_NAND_DEVICE(Device)); 
   assert_param(IS_FMC_NAND_BANK(Bank));
 
+  /* Get tick */ 
+  tickstart = HAL_GetTick();
+
   /* Wait until FIFO is empty */
-  while(__FMC_NAND_GET_FLAG(Device, Bank, FMC_FLAG_FEMPT) == RESET);
+  while(__FMC_NAND_GET_FLAG(Device, Bank, FMC_FLAG_FEMPT) == RESET)
+  {
+    /* Check for the Timeout */
+    if(Timeout != HAL_MAX_DELAY)
+    {
+      if((Timeout == 0)||((HAL_GetTick() - tickstart ) > Timeout))
+      {
+        return HAL_TIMEOUT;
+      }
+    }  
+  }
+ 
   /* Get the ECCR register value */
   *ECCval = (uint32_t)Device->ECCR;
 
